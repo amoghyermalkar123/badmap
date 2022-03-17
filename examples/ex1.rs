@@ -19,7 +19,6 @@ fn main() {
     let data = "<proto><hash>name\n<key>1\n<d>u64\n<v>user1\n<d>str\n<key>2\n<d>u64\n<v>user2\n<d>str\n</hash></proto>";
     
     let mut source: Peekable<Chars> = data.chars().peekable();
-
    
     let a = foo(, "<proto>");
     let b = a.unwrap();
