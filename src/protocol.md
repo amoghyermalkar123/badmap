@@ -4,15 +4,15 @@
 <p>
     <h>name\n
         <k>1\n
-            <d>u64\n
+            <d>0\n
             <v>user1\n
-                <d>str\n
+                <d>2\n
         <k>2\n
-            <d>u64\n
+            <d>0\n
             <v>user2\n
-                <d>str\n
-    </h>
-</p>
+                <d>2\n
+    <H>
+<P>
 
 
 
@@ -21,7 +21,13 @@ enum Token {
     String
 }
 
+enum DataType {
+    0 u64
+    1 f64
+    2 &str
+    3 String
+}
+
 grammar - Vec<(K,V)>
 
 output - [("hashname", ""),(key1, value1),(key2, value2),(key3, value3) ..]
-
