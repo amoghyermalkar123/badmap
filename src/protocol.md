@@ -13,3 +13,15 @@
                 <d>str\n
     </hash>
 </proto>
+
+
+
+enum Token {
+    Int
+    String
+}
+
+grammar - Vec<(K,V)>
+
+output - [("hashname", ""),(key1, value1),(key2, value2),(key3, value3) ..]
+
