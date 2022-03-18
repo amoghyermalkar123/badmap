@@ -20,22 +20,33 @@ impl ParseHmp {
                 }
 
                 'p' => {
-                    tokens.push(Token::String(make_hm_name(&mut source)?));
+                    // 
                 }
 
                 'h' => {
                     tokens.push(Token::String(make_hm_name(&mut source)?));
                 }
                 'k' => {
+
                     while let Some(ch) = source.peek() {
+                        let mut key : Vec<&char> = Vec::new();
+
                         match ch {
                             'd' => {
                                 // get datatype, create token from data type
                                 // increment global peeker
                             }
+                            'a'..='z' | 'A'..='Z' | '0'..='9' => {
+                                key.push(ch)
+                            }
+
+                            '\n' => {
+                                source.next();
+                            } 
+                            
+                            _ => {}
                         }
                     }
-                    tokens.push(Token::String(make_hm_name(&mut source)?));
                 }
                 'v' => {
                     tokens.push(Token::String(make_hm_name(&mut source)?));
@@ -63,9 +74,39 @@ impl ParseHmp {
     }
 }
 
-fn make_hm_name(src : &mut Peekable<Chars>) {}
+fn make_hm_name(src : &mut Peekable<Chars>) -> Result<String, String> {
+    let mut name = src.next().unwrap().to_string();
+    while let Some(&ch) = src.peek() {
+        match ch {
+            '\n' => break,
 
-fn make_int(src : &mut Peekable<Chars>) {}
+            _ => {
+                name.push(ch);
+                src.next();
+            }
+
+        };
+    }
+    Ok(name)
+}
+
+fn make_u64(src : &mut Peekable<Chars>) -> Result<u64, String>{
+        let mut number = src.next().unwrap().to_string();
+        while let Some(&ch) = src.peek() {
+            match ch {
+                '0'..='9' => {
+                    number.push(ch);
+                    src.next();
+                }
+
+                '\n' => break,
+                
+                _ => break,
+            };
+        }
+    
+        number.parse::<u64>().map_err(|err| err.to_string())
+}
 
 #[cfg(test)]
 mod tests {

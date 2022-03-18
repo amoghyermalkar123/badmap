@@ -3,14 +3,10 @@
 
 <p>
     <h>name\n
-        <k>1\n
-            <d>0\n
-            <v>user1\n
-                <d>2\n
-        <k>2\n
-            <d>0\n
-            <v>user2\n
-                <d>2\n
+        <k>+1\n
+            <v>:user1\n
+        <k>:amogh\n
+            <v>:user2\n
     <H>
 <P>
 
