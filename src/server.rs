@@ -6,7 +6,7 @@ use super::hmp_parser::HmpCompiler;
 use super::hashmap::HashMap;
 use super::token;
 
-pub fn handle_connection(hashmap : &mut HashMap<String, Types>, stream : &mut TcpStream) -> Result<(), String>{
+pub fn handle_connection(hashmap : &mut HashMap<String, &Types>, stream : &mut TcpStream) -> Result<(), String>{
     let mut buf = [0; 1024];
     let n = stream.read(&mut buf).unwrap();
     // println!("recv : {:?}", buf);
@@ -16,7 +16,7 @@ pub fn handle_connection(hashmap : &mut HashMap<String, Types>, stream : &mut Tc
 
     if let Ok(ref input) = HmpCompiler::compile_hmp(source) {
         let key = input[1].unwrap_key().unwrap();
-        let value = input[2].unwrap_val().unwrap();
+        let value = input[2].unwrap_val();
         hashmap.set(key, value);
         // hashmap.set(input[1].unwrap_key().unwrap(), input[2].unwrap_val());
         Ok(())

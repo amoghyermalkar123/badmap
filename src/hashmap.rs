@@ -10,6 +10,7 @@ pub struct HashMap<K, V> {
 
 impl<K, V> HashMap<K, V>
 where
+K : Hash + Eq,
 {
     pub fn new() -> Self {
         HashMap {
