@@ -1,95 +1,34 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-mod in_memory;
+mod hashmap;
 mod hmp_parser;
+mod in_memory;
+mod server;
 mod token;
 
-struct HashMap<K, V> {
-    index_array: Vec<Vec<(K, V)>>,
+use std::borrow::BorrowMut;
+use std::net::{TcpListener, TcpStream};
+
+fn main() -> std::io::Result<()> {
+    Ok(())
 }
 
-impl<K, V> HashMap<K, V>
-where
-    K: Hash + Eq,
-{
-    fn new() -> Self {
-        HashMap {
-            index_array: Vec::new(),
-        }
-    }
+// fn main() {
+//     let mut hm = HashMap::<u64, String>::new();
 
-    fn set(&mut self, key: K, value: V) {
-        let mut hasher = DefaultHasher::new();
-        key.hash(&mut hasher);
-        let hash = hasher.finish();
+//     for i in 1..6 {
+//         hm.set(i, format!("value is {value}", value = i).to_string());
+//     }
 
-        if self.index_array.len() == 0 {
-            self.index_array.push(vec![(key, value)]);
-            return;
-        }
+//     for i in 1..6 {
+//         let ans = hm.get(i);
 
-        let index = (hash % self.index_array.len() as u64) as usize;
+//         println!("answer is {:?}", ans.unwrap());
+//     }
 
-        self.index_array[index].push((key, value));
-    }
+//     hm.delete(2);
 
-    fn delete(&mut self, key: K) {
-        let mut hasher = DefaultHasher::new();
-        key.hash(&mut hasher);
-        let hash = hasher.finish();
+//     for i in 1..6 {
+//         let ans = hm.get(i);
 
-        if self.index_array.len() == 0 {
-            self.index_array.remove(0);
-            return;
-        }
-
-        let index = (hash % self.index_array.len() as u64) as usize;
-
-        let bucket = &mut self.index_array[index];
-
-        if let Some(index) = bucket.iter().position(|(k, _)|{*k == key}) {
-            bucket.remove(index);
-        }
-    }
-
-    fn get(&self, key: K) -> Option<&V> {
-        let mut hasher = DefaultHasher::new();
-        key.hash(&mut hasher);
-        let hash = hasher.finish();
-
-        if self.index_array.len() == 0 {
-            return None;
-        }
-
-        let index = (hash % self.index_array.len() as u64) as usize;
-
-        for (k, v) in &self.index_array[index] {
-            if key == *k {
-                return Some(v);
-            }
-        }
-        None
-    }
-}
-
-fn main() {
-    let mut hm = HashMap::<u64, String>::new();
-
-    for i in 1..6 {
-        hm.set(i, format!("value is {value}", value = i).to_string());
-    }
-
-    for i in 1..6 {
-        let ans = hm.get(i);
-
-        println!("answer is {:?}", ans.unwrap());
-    }
-
-    hm.delete(2);
-
-    for i in 1..6 {
-        let ans = hm.get(i);
-
-        println!("answer is {:?}", ans.unwrap_or(&"none".to_string()));
-    }
-}
+//         println!("answer is {:?}", ans.unwrap_or(&"none".to_string()));
+//     }
+// }

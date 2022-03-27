@@ -1,31 +1,12 @@
-use nom::{bytes::complete::tag,bytes::complete::take_till, IResult};
-use std::{iter::Peekable, str::Chars};
+use std::io::prelude::*;
+use std::net::TcpStream;
 
-fn foo<'a> (s: &'a str, pt : &'a str) -> IResult<&'a str, &'a str> {
-    tag(pt)(s)
-}
-
-fn bar(s: &str) -> IResult<&str, &str> {
-    // println!("{}",s);
-    tag("\n")(s)
-}
-
-fn till_colon(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '\n')(s)
-  }
-
-fn main() {
-    let tokens: Vec<String> = vec![];
-    let data = "<proto><hash>name\n<key>1\n<d>u64\n<v>user1\n<d>str\n<key>2\n<d>u64\n<v>user2\n<d>str\n</hash></proto>";
-    
-    let mut source: Peekable<Chars> = data.chars().peekable();
-   
-    let a = foo(, "<proto>");
-    let b = a.unwrap();
-
-    
-    let b = foo(b.0, "<hash>").unwrap();
-
-    let c = till_colon(b.0).unwrap();
-    println!("{:?}", c);
+fn main() -> std::io::Result<()> {
+    if let Ok(mut stream) = TcpStream::connect("127.0.0.1:34254") {
+        println!("connected to the server");
+        println!("{}", stream.write(b"<p><h>name\n<k>+1\n<v>:user1\n<H><P>")?);
+    } else {
+        println!("connection failed!");
+    }
+    Ok(())
 }
