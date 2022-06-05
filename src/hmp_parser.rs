@@ -1,14 +1,21 @@
 use crate::token::Types;
-
-use super::token::{Token};
-use std::{iter::Peekable, str::Chars, borrow::Cow};
+use super::token::Token;
+use std::{iter::Peekable, str::Chars, io::Read};
 
 pub struct HmpCompiler;
 
 impl HmpCompiler {
-    pub fn compile_hmp(data: Cow<str>) -> Result<Vec<Token<Types>>, String> {
+    pub fn compile_hmp(mut data: &[u8]) -> Result<Vec<Option<Token<Types>>>, String> {
         let mut tokens = vec![];
-        let mut source: Peekable<Chars> = data.chars().peekable();
+        let mut source = String::new();
+
+        let src = data.read_to_string(&mut source);
+        match src {
+            Err(_) => {return Err("parsing failed, wrong format".to_string())}
+            _ => {},
+        }
+
+        let mut source: Peekable<Chars> = source.chars().peekable();
 
         while let Some(ch) = source.peek() {
             match ch {
@@ -20,7 +27,7 @@ impl HmpCompiler {
                     while let Some(ch) = source.next() {
                         match ch {
                             '>' => {
-                                tokens.push(Token::Hash(Types::Str(make_string(&mut source)?)));
+                                tokens.push(Some(Token::Hash(Types::Str(make_string(&mut source)?))));
                                 break;
                             }
 
@@ -33,11 +40,11 @@ impl HmpCompiler {
                     while let Some(ch) = source.next() {
                         match ch {
                             ':' => {
-                                tokens.push(Token::Key(Types::Str(make_string(&mut source)?)));
+                                tokens.push(Some(Token::Key(Types::Str(make_string(&mut source)?))));
                             }
 
                             '+' => {
-                                tokens.push(Token::Key(Types::U64(make_u64(&mut source)?)));
+                                tokens.push(Some(Token::Key(Types::U64(make_u64(&mut source)?))));
                             }
 
                             '\n' => break,
@@ -51,11 +58,11 @@ impl HmpCompiler {
                     while let Some(ch) = source.next() {
                         match ch {
                             ':' => {
-                                tokens.push(Token::Value(Types::Str(make_string(&mut source)?)));
+                                tokens.push(Some(Token::Value(Types::Str(make_string(&mut source)?))));
                             }
 
                             '+' => {
-                                tokens.push(Token::Value(Types::U64(make_u64(&mut source)?)));
+                                tokens.push(Some(Token::Value(Types::U64(make_u64(&mut source)?))));
                             }
 
                             '\n' => break,
@@ -117,15 +124,18 @@ fn make_u64(src: &mut Peekable<Chars>) -> Result<u64, String> {
 
 #[cfg(test)]
 mod tests {
-    use crate::token::{Token};
-    use std::{iter::Peekable, str::Chars, borrow::Cow};
-
     #[test]
     fn it_works() {
-        use super::HmpCompiler;
+        use super::*;
 
-        let tokens = HmpCompiler::compile_hmp(Cow::Borrowed("<p><h>myhashmap\n<k>+100\n<v>:amogh\n<H><P>"));
+        let data = "<p><h>myhashmap\n<k>+100\n<v>:amogh\n<H><P>".as_bytes();
 
-        // println!("{:?}", tokens.unwrap());
+        let tokens = HmpCompiler::compile_hmp(data);
+        let vect = tokens.unwrap();
+        println!("{:?}", vect)
+        // TODO: don't know how to test this, figure out.
+        // for elem in vect.iter() {
+        //     assert_eq!(elem.unwrap_key().unwrap::<u64>(), Types::U64(100).unwrap::<u64>())
+        // }
     }
 }
